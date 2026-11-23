@@ -1,0 +1,12 @@
+# 本机直跑使用（scripts/run_local.py），Dify 在 127.0.0.1:5001
+[node]
+id = "node-fin"
+dept = "fin"
+federation_key = "real-node-key"
+fetch_titles = true
+timeout_ms = 1500
+
+[datasets.fin]
+dify_base_url = "http://127.0.0.1:5001"
+dify_dataset_id = "ds-fin"
+api_key = "real-key-fin"

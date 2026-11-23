@@ -1,0 +1,21 @@
+# 中心服务器上只需要这一个服务 + 一个数据卷
+#
+# 用法：
+#   cp .env.example .env && vi .env
+#   docker compose up -d
+services:
+  center:
+    image: solirag-center:0.1.0
+    container_name: solirag-center
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/data          # 备份就是复制 ./data/solirag.db
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "5"

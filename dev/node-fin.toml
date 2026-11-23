@@ -1,0 +1,12 @@
+# 容器内使用（docker-compose.dev.yml），dify_base_url 指向 compose 里的服务名
+[node]
+id = "node-fin"
+dept = "fin"
+federation_key = "dev-federation-key"
+fetch_titles = true
+timeout_ms = 1500
+
+[datasets.fin]
+dify_base_url = "http://fake-dify:5001"
+dify_dataset_id = "ds-fin"
+api_key = "dev-key-fin"

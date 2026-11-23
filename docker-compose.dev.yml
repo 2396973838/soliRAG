@@ -1,0 +1,54 @@
+# 本地开发栈：1 中心 + 2 节点 + 1 假 Dify，一键起完整链路
+#
+#   docker compose -f docker-compose.dev.yml up -d --build
+#   curl localhost:8080/healthz
+#
+# 生产请用 deploy/center 与 deploy/node 两套（节点分别部署在各部门）
+name: solirag-dev
+
+services:
+  fake-dify:
+    build: ./dev
+    container_name: solirag-dev-fake-dify
+    ports:
+      - "5001:5001"
+
+  node-hr:
+    build: ./node
+    container_name: solirag-dev-node-hr
+    environment:
+      SOLIRAG_NODE_CONFIG: /app/node.toml
+    volumes:
+      - ./dev/node-hr.toml:/app/node.toml:ro
+    ports:
+      - "8001:8001"
+    depends_on:
+      - fake-dify
+
+  node-fin:
+    build: ./node
+    container_name: solirag-dev-node-fin
+    environment:
+      SOLIRAG_NODE_CONFIG: /app/node.toml
+    volumes:
+      - ./dev/node-fin.toml:/app/node.toml:ro
+    ports:
+      - "8002:8001"
+    depends_on:
+      - fake-dify
+
+  center:
+    build: ./center
+    container_name: solirag-dev-center
+    environment:
+      SOLIRAG_DB_PATH: /data/solirag.db
+      SOLIRAG_ADMIN_TOKEN: dev-admin-token
+      SOLIRAG_NODE_KEY: dev-federation-key
+      SOLIRAG_NODES: node-hr=http://node-hr:8001,node-fin=http://node-fin:8001
+    volumes:
+      - ./dev/data:/data
+    ports:
+      - "8080:8080"
+    depends_on:
+      - node-hr
+      - node-fin

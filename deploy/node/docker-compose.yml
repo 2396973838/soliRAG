@@ -1,0 +1,23 @@
+# 部门节点：每个部门各拷一份这个目录到自己的机器
+#
+# 用法：
+#   cp node.example.toml node.toml   # 填本部门 Dify 地址与知识库 API key
+#   docker compose up -d
+#
+# 注意：8001 只对中心开放，不要暴露到公网（Dify 不需要对外）
+services:
+  node:
+    image: solirag-node:0.1.0
+    container_name: solirag-node
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./node.toml:/app/node.toml:ro
+    environment:
+      SOLIRAG_NODE_CONFIG: /app/node.toml
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "5"

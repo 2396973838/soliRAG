@@ -1,0 +1,13 @@
+# 本机直跑使用（scripts/run_local.py），Dify 在 127.0.0.1:5001
+# 用途：真实进程 + 真实 TCP 的冒烟测试（scripts/smoke_real.py）
+[node]
+id = "node-hr"
+dept = "hr"
+federation_key = "real-node-key"
+fetch_titles = true
+timeout_ms = 1500
+
+[datasets.hr]
+dify_base_url = "http://127.0.0.1:5001"
+dify_dataset_id = "ds-hr"
+api_key = "real-key-hr"

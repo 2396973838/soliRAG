@@ -1,0 +1,31 @@
+# soliRAG 节点配置：只在部门服务器上，不进中心、不进 git
+#
+# 每个部门各一份。你在这里登记"本节点持有哪些库"以及"这些库在哪个 Dify 上"。
+# 中心只知道 (库名 -> 节点名)，永远看不到下面的 api_key。
+
+[node]
+id = "node-hr"
+dept = "hr"
+
+# 与中心的 SOLIRAG_NODE_KEY 保持一致；生产环境请用随机长串
+federation_key = "dev-federation-key"
+
+# 空数组 = 只信中心（v1 默认）；填入部门名即启用节点本地硬拦
+allowed_readers = []
+
+# 是否用 Dify 的文档接口补全 title（文档名）。失败会自动回退到 document_id
+fetch_titles = true
+
+# 单次调用本部门 Dify 的超时
+timeout_ms = 1500
+
+[datasets.hr]
+dify_base_url = "http://dify-hr:5001"
+dify_dataset_id = "00000000-0000-0000-0000-000000000000"
+api_key = "dataset-xxxxxxxxxxxxxxxxx"
+# 必须与该知识库的索引类型一致：
+#   high_quality 索引 -> semantic_search / hybrid_search
+#   economy 索引     -> keyword_search（economy 没有向量，semantic 会 400）
+search_method = "semantic_search"
+# 是否让 Dify 自己做 rerank（中心默认不做 rerank）
+reranking = false

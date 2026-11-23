@@ -1,0 +1,37 @@
+# 在 dev 栈之上接一个"真实 Dify"节点
+#
+#   python scripts/dify_setup.py --dataset hr-policy --base-url http://host.docker.internal
+#   docker compose -f docker-compose.dev.yml -f docker-compose.dify.yml up -d
+#
+# 于是同一个中心里同时有：假 Dify（hr/fin 两库）+ 真 Dify（hr-policy 库）
+name: solirag-dev
+
+services:
+  # 本地占位 LLM：Dify 的「应用」必须绑一个模型才能回答问题。
+  # 它不做真正生成，但引用来自真实的联邦检索结果。
+  # 接真实模型时，只需在 Dify 里把 base_url / api key 换成真地址。
+  mock-llm:
+    build:
+      context: ./dev
+      dockerfile: Dockerfile.mock-llm
+    container_name: solirag-dev-mock-llm
+    ports:
+      - "5099:5099"
+
+  node-dify:
+    build: ./node
+    container_name: solirag-dev-node-dify
+    environment:
+      SOLIRAG_NODE_CONFIG: /app/node.toml
+    volumes:
+      - ./dev/node-dify.toml:/app/node.toml:ro
+    ports:
+      - "8003:8001"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - fake-dify
+
+  center:
+    environment:
+      SOLIRAG_NODES: node-hr=http://node-hr:8001,node-fin=http://node-fin:8001,node-dify=http://node-dify:8001
